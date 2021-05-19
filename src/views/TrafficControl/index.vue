@@ -5,7 +5,7 @@
           <div class="title title-fontsize">
             企业信息
           </div>
-          <template v-if="fanye=='a'">
+          <div v-show="fanye=='a'">
             <div class="chart-a">
               <v-chart :options="ChartData5" />
             </div>
@@ -16,10 +16,21 @@
               <v-chart :options="ChartData7" />
             </div>
             <div class="chart-a">
-              <v-chart :options="ChartData8" />
+              <div class="jp-head">驾培企业明细</div>
+              <textScrollingTs2 type="text" :startAnimation='startAnimation'  >
+                <template v-slot:content>
+                  <div class="jp-cnt">
+                    <div class="jp-cnt-li" v-for="(item,index) in ChartData8['names']" :key="index">
+                        <div class="li-l">{{item}}</div>
+                        <div class="li-r">{{ChartData8['counts'][index]}}</div>
+                    </div>
+                  </div>
+                </template>
+              </textScrollingTs2>
+              
             </div>
-          </template>
-          <template v-if="fanye=='b'">
+          </div>
+          <div v-if="fanye=='b'">
             <div class="chart-a">
               <v-chart :options="ChartData9" />
             </div>
@@ -29,7 +40,7 @@
             <div class="chart-a">
               <v-chart :options="ChartData11" />
             </div>
-          </template>
+          </div>
           
         </coat>
         <div class="operate-area">
@@ -102,6 +113,7 @@ import slideCoat from '@/components/slideCoat'
 import modelNav from './modelNav'
 import busSendPopup from './busSendPopup'
 import classLinePopup from './classLinePopup'
+import textScrollingTs2 from '@/components/textScrollingTs2'
 import { barStyleOneChartData,barStyleOneChartData2, waterChartData,pieStyleOneChartData } from './chart'
 import { ajaxVariationtendency,ajaxCorpinfo } from './request'
 import labelPoint from './labelPoint'
@@ -131,7 +143,8 @@ export default {
       ChartData11:{},
       isbottom:false,
       labelPointShow:false,
-      labelPoint:[]
+      labelPoint:[],
+      startAnimation:''
       
     }
   },
@@ -141,7 +154,8 @@ export default {
     modelNav,
     busSendPopup,
     classLinePopup,
-    labelPoint
+    labelPoint,
+    textScrollingTs2
   },
   created() {
     // this.barStyleOneChartData = barStyleOneChartData()
@@ -222,14 +236,9 @@ export default {
     })
     ajaxCorpinfo(6)
     .then(res => {
-      // 驾培企业明细(柱状)
-      let aData = {
-        title:'驾培企业明细',
-        counts:res.counts,
-        names:res.names,
-        max:res.max
-      }
-      this.ChartData8 = barStyleOneChartData(aData)
+      // 驾培企业明细(自定义样式)
+      this.ChartData8 = res
+      this.startAnimation = Math.round(new Date().getTime()/1000)
     })
     ajaxCorpinfo(4)
     .then(res => {
@@ -506,6 +515,36 @@ export default {
             bottom: -19px;
             transform: rotate(90deg);
           }
+        }
+      }
+    }
+    .jp-head{
+      width: 100%;
+      font-size: 56px;
+      height: 100px;
+    }
+    .jp-cnt{
+      width: 100%;
+      overflow: hidden;
+      box-sizing: border-box;
+      .jp-cnt-li{
+        height: 64px;
+        overflow: hidden;
+        font-size: 56px;
+        color: #fff;
+  
+        display: flex;
+        justify-content: space-between;
+        .li-l{
+          width: 70%;
+          overflow:hidden;
+          text-overflow:ellipsis;
+          white-space:nowrap;
+        }
+        .li-r{
+          width: 25%;
+          overflow:hidden;
+          text-align: right;
         }
       }
     }

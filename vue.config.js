@@ -11,7 +11,7 @@ module.exports = {
   filenameHashing: true,// 默认在生成的静态资源文件名中包含hash以控制缓存
   css: {
     // 是否使用css分离插件 ExtractTextPlugin
-    extract: true,
+    extract: false,
     // 开启 CSS source maps?
     sourceMap: false,
     // css预设器配置项

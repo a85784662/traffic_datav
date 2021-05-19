@@ -48,7 +48,21 @@ export function barStyleOneChartData(aData) {
         }
       },
       "axisLabel": {
-        show: false // 隐藏X轴文字
+        show: true, // 隐藏X轴文字,
+        formatter: function (value) {
+          let valueTxt = '';
+          if (value.length > 3) {
+            valueTxt = value.substring(0, 4) + '...';
+          }
+          else {
+            valueTxt = value;
+          }
+          return valueTxt;
+        },
+        textStyle: {
+          color: '#fff',
+          fontSize: '32'
+        }
       },
 
     },
@@ -102,6 +116,15 @@ export function barStyleOneChartData(aData) {
         stack: "1",
         itemStyle: {
           normal: {
+            label: {
+              show: true,
+              distance: 20,
+              position: 'top',
+              textStyle: {
+                color: 'white',
+                fontSize: 30
+              }
+            },
             color: function () {
               var color;
               color = {
@@ -149,8 +172,6 @@ export function barStyleOneChartData(aData) {
         z: 2,
         animationEasing: "elasticOut"
       }
-
-
     ]
   }
 }

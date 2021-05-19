@@ -6,8 +6,8 @@ var cubes = new THREE.Mesh()
 
 //   stats = new Stats();
 
-init();
-animate();
+// init();
+// animate();
 
 // 重新定义sessionStorage.setItem
 var orignalSetItem = sessionStorage.setItem
