@@ -5,7 +5,7 @@
           <div class="title title-fontsize">
             企业信息
           </div>
-          <div v-show="fanye=='a'">
+          <div v-if="fanye=='a'">
             <div class="chart-a">
               <v-chart :options="ChartData5" />
             </div>
@@ -15,6 +15,14 @@
             <div class="chart-a">
               <v-chart :options="ChartData7" />
             </div>
+
+            <div class="chart-a">
+              <v-chart :options="ChartData9" />
+            </div>
+
+            
+          </div>
+          <div v-if="fanye=='b'">
             <div class="chart-a">
               <div class="jp-head">驾培企业明细</div>
               <textScrollingTs2 type="text" :startAnimation='startAnimation'  >
@@ -27,15 +35,22 @@
                   </div>
                 </template>
               </textScrollingTs2>
-              
             </div>
-          </div>
-          <div v-if="fanye=='b'">
-            <div class="chart-a">
-              <v-chart :options="ChartData9" />
-            </div>
-            <div class="chart-a">
-              <v-chart :options="ChartData10" />
+            
+            <div class="chart-a ts">
+              <!-- <v-chart :options="ChartData10" /> -->
+              <div class="jp-head">普货企业明细</div>
+              <textScrollingTs3 type="text" :startAnimation='startAnimation2'  >
+                <template v-slot:content>
+                  <div class="jp-cnt">
+                    <div class="jp-cnt-li" v-for="(item,index) in ChartData10['names']" :key="index">
+                        <div class="li-l">{{item}}</div>
+                        <div class="li-r">{{ChartData10['counts'][index]}}</div>
+                    </div>
+                  </div>
+                </template>
+              </textScrollingTs3>
+
             </div>
             <div class="chart-a">
               <v-chart :options="ChartData11" />
@@ -114,12 +129,12 @@ import modelNav from './modelNav'
 import busSendPopup from './busSendPopup'
 import classLinePopup from './classLinePopup'
 import textScrollingTs2 from '@/components/textScrollingTs2'
-import { barStyleOneChartData,barStyleOneChartData2, waterChartData,pieStyleOneChartData } from './chart'
+import textScrollingTs3 from '@/components/textScrollingTs3'
+import { barStyleOneChartData, waterChartData,pieStyleOneChartData } from './chart'
 import { ajaxVariationtendency,ajaxCorpinfo } from './request'
 import labelPoint from './labelPoint'
 
 export default {
-  name: 'TrafficControl',
   data() {
     return {
       barStyleOneChartData:{},
@@ -144,7 +159,8 @@ export default {
       isbottom:false,
       labelPointShow:false,
       labelPoint:[],
-      startAnimation:''
+      startAnimation:'',
+      startAnimation2:''
       
     }
   },
@@ -155,7 +171,8 @@ export default {
     busSendPopup,
     classLinePopup,
     labelPoint,
-    textScrollingTs2
+    textScrollingTs2,
+    textScrollingTs3
   },
   created() {
     // this.barStyleOneChartData = barStyleOneChartData()
@@ -234,12 +251,7 @@ export default {
       }
       this.ChartData7 = barStyleOneChartData(aData)
     })
-    ajaxCorpinfo(6)
-    .then(res => {
-      // 驾培企业明细(自定义样式)
-      this.ChartData8 = res
-      this.startAnimation = Math.round(new Date().getTime()/1000)
-    })
+    
     ajaxCorpinfo(4)
     .then(res => {
       // 出租企业明细(柱状)
@@ -251,32 +263,7 @@ export default {
       }
       this.ChartData9 = barStyleOneChartData(aData)
     })
-    ajaxCorpinfo(3)
-    .then(res => {
-      // 普货企业明细(柱状)
-      let aData = {
-        title:'普货企业明细',
-        counts:res.counts,
-        names:res.names,
-        max:res.max
-      }
-      this.ChartData10 = barStyleOneChartData2(aData)
-    })
-    ajaxCorpinfo(5)
-    .then(res => {
-      // 维修企业明细（饼）
-      let aData = {
-        title:'维修企业明细',
-        data:[]
-      }
-      res.data.forEach(item => {
-        aData.data.push({
-          value:item.count,
-          name:item.name
-        })
-      })
-      this.ChartData11 = pieStyleOneChartData(aData)
-    })
+    
   
   },
   methods: {
@@ -307,6 +294,40 @@ export default {
     fanyeHandle(){
       this.isbottom = !this.isbottom
       this.isbottom ? this.fanye = 'b' : this.fanye = 'a'
+      if(this.fanye == 'b'){
+        ajaxCorpinfo(6)
+        .then(res => {
+          // 驾培企业明细(自定义样式)
+          this.ChartData8 = res
+          this.startAnimation = Math.round(new Date().getTime()/1000)
+        })
+        ajaxCorpinfo(3)
+          .then(res => {
+            // 普货企业明细(自定义样式)
+            this.ChartData10 = res
+            console.log('ChartData10',this.ChartData10);
+            this.$nextTick(function(){
+              this.startAnimation2 = Math.round(new Date().getTime()/1000)
+            })
+            
+          })
+          ajaxCorpinfo(5)
+          .then(res => {
+            // 维修企业明细（饼）
+            let aData = {
+              title:'维修企业明细',
+              data:[]
+            }
+            res.data.forEach(item => {
+              aData.data.push({
+                value:item.count,
+                name:item.name
+              })
+            })
+            this.ChartData11 = pieStyleOneChartData(aData)
+          })
+      }
+
     },
     labelPointEvent(){
       this.labelPoint = []
@@ -373,6 +394,9 @@ export default {
     margin-left: 20px;
     margin-bottom: 26px;
     box-sizing: border-box;
+    &.ts{
+      margin:46px 0;
+    }
   }
   .title {
         height: 110px;
@@ -520,6 +544,8 @@ export default {
     }
     .jp-head{
       width: 100%;
+      box-sizing: border-box;
+      padding-left: 30px;
       font-size: 56px;
       height: 100px;
     }
@@ -537,6 +563,8 @@ export default {
         justify-content: space-between;
         .li-l{
           width: 70%;
+          box-sizing: border-box;
+          padding-left: 30px;
           overflow:hidden;
           text-overflow:ellipsis;
           white-space:nowrap;
